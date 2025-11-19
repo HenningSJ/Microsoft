@@ -1,0 +1,105 @@
+Supert spørsmål, Henning! Her er en kort, strukturert sammenligning som forklarer hva det refaktorerte skriptet mitt gjør annerledes enn skriptet du la ved, og hvorfor det er bedre i drift.
+
+1) Beregning av «utildelte lisenser»
+Ditt skript:
+Bruker Unassigned = ActiveUnits - ConsumedUnits, og summerer deretter på nytt med PrepaidUnits.Enabled ($Licensecount + $Unassignedcount). Det gir for høye/rare tall.
+Mitt skript:
+Beregner konsekvent Unassigned = PrepaidUnits.Enabled - ConsumedUnits.
+Hvorfor bedre: Dette matcher hvordan subscribedSkus er definert i Microsoft Graph (kjøpte enheter vs. tildelte enheter), og gir riktige tall—spesielt viktig når du rapporterer til økonomi/innkjøp.
+
+2) Robust håndtering av SKU (PartNumber vs. hardkodet GUID)
+Ditt skript:
+Bruker mange hardkodede GUID-er (SkuId). Hvis Microsoft endrer, eller tenant har en annen SKU-variant, kan filtrering på .AssignedLicenses.SkuId -contains <GUID> feile—f.eks. at Teams Rooms Pro telles helt feil.
+Mitt skript:
+Henter SkuId fra tenant basert på SkuPartNumber via en hjelpefunksjon (Get-SkuSummary).
+Hvorfor bedre: Mindre risiko for feil og vedlikehold, og tallene vil alltid samsvare med hva som faktisk er kjøpt i den aktuelle tenant’en.
+
+3) Én innlasting av data (ytelse og stabilitet)
+Ditt skript:
+Kaller Get-MgSubscribedSku og Get-MgUser mange ganger i hele skriptet.
+Mitt skript:
+Henter alle SKU-er én gang ($allSkus) og alle brukere én gang ($allUsers), og jobber videre i minnet.
+Hvorfor bedre: Raskere kjøring, mindre nettverksstøy, mer stabil rapport—spesielt i MSP‑miljø med større tenants.
+
+4) Funksjoner og gjenbruk
+Ditt skript:
+Har mye duplisert kode pr lisens (telling, skriving, filtrering og output).
+Mitt skript:
+Bruker små funksjoner:
+
+Get-SkuSummary (samler Enabled/Consumed/Unassigned + SkuId)
+Write-LicenseTotals (standardisert output)
+Get-LicenseUsers (henter brukere for en SkuId)
+Count-ByOrganization (teller pr selskap/avdeling)
+Write-PerCompanySection og Write-UserList (skriver seksjoner likt)
+Hvorfor bedre: Mindre duplisering, lettere å utvide, lavere sannsynlighet for skrivefeil og feilkopiering (slik som -1 eller feil variabelnavn).
+
+
+5) Fikser kjente skrivefeil og fallgruver
+Ditt skript:
+Har flere småfeil som gir feil tall:
+
+Typos i variabelnavn (f.eks. $ArcticTrainPBIUP vs $ArcticTrainPBIPU, $SnowHotelEXOP2isens osv.)
+Enkelte tellinger har -1 hardkodet (PBIP/SnowHotel), uten grunnlag.
+Sommarøy Basic teller fra ArcticTrain-variabel ved en feil.
+
+Mitt skript:
+Eliminerer disse ved å gjenbruke logikk i funksjoner og standardisere output.
+Hvorfor bedre: Tallene blir riktige og konsistente på tvers av seksjoner.
+
+6) Teams Rooms Pro håndtert korrekt
+Ditt skript:
+Blander GUID/variabelnavn og feil «utildelte»-formel, slik at Teams Rooms Pro kan bli kraftig overrapportert (42+).
+Mitt skript:
+
+Validerer SKU med PartNumber, henter SkuId fra tenant.
+Bruker korrekt «utildelte»-formel.
+Plasserer striplelinje etter Teams Rooms‑seksjonen (som du ønsket).
+Hvorfor bedre: Riktig antall rom‑lisenser, ryddig rapportseksjon, og null «magiske tall».
+
+
+7) Spesialtilfelle: SharePoint Extra Storage
+Ditt skript:
+Blander «lisenser» og «GB» i teksten.
+Mitt skript:
+Behandler SHAREPOINTSTORAGE som kvote i GB, ikke som lisensantall; output viser «3000 GB ekstra lagring», uten «lisenser».
+Hvorfor bedre: Mer korrekt og forståelig for mottakerne.
+
+8) Konsistent formatering og struktur
+Ditt skript:
+Output varierer litt (blandet ASCII/UTF8, noen seksjoner mangler formaterte lister, noen har tomme linjer før/etter seksjoner).
+Mitt skript:
+
+Ensartet UTF‑8.
+Standardisert overskrifter, separatorer, tomlinjer.
+Format-Table for brukerlister, slik at kolonner alltid er pene i TXT.
+Hvorfor bedre: Rapporten blir lett å lese, sammenligne og arkivere.
+
+
+9) Feilhåndtering og «sikre default‑verdier»
+Ditt skript:
+Forutsetter at alle SKU-er finnes i tenant og at alle variabler/partnumbers er korrekte.
+Mitt skript:
+
+Returnerer 0 og tomme lister hvis en SKU ikke finnes (f.eks. produkt ikke kjøpt).
+Stopper på alvorlige feil (via $ErrorActionPreference = 'Stop') for å unngå delvise/feilaktige rapporter.
+Hvorfor bedre: Tåler variasjoner mellom kunder/tenants uten å falle sammen.
+
+
+10) Vedlikehold for MSP‑hverdag
+Ditt skript:
+Hardkodet, mye kopiert logikk—hver gang du legger til en ny SKU, må du kopiere flere blokker og huske alle variantene.
+Mitt skript:
+Legg til én PartNumber, kall Get-SkuSummary, og så gjenbruk seksjonsskrivingen (totalsum, per‑selskap, brukerliste).
+Hvorfor bedre: Mye raskere å onboarde nye kunder/produkter og redusere menneskelige feil.
+
+Oppsummert
+
+Riktig matematikk for «utildelte» (Enabled − Consumed).
+PartNumber‑drevet og tenant‑validerte SkuId, ikke hardkodet.
+Ytelse/stabilitet: én henting av SKU-er og brukere.
+Funksjoner/gjenbruk: mindre duplisering, færre bugs.
+Teams Rooms Pro & SharePoint Storage: korrekt logikk og korrekt tekst.
+Konsistent og lesbar rapport: ryddig formaterte lister og separatorer.
+
+Resultatet er en mer presis, robust og vedlikeholdsvennlig rapport—perfekt for MSP‑drift og for å gi ledelse/økonomi en troverdig status.

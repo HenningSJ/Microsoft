@@ -35,37 +35,39 @@ Write-Output "-----------------------------------------------------------" | out
 
 
 #region Setter variabler for software ObjectID for de forskjellige lisenstypene
-#SKU ID til produktene
-#Power BI Pro
+# SKU ID til produktene
+# Power BI Pro
 $POWER_BI_PRO = "f8a1db68-be16-40ed-86d5-cb42ce701560"
-#PBI_PREMIUM_PER_USER
+# PBI_PREMIUM_PER_USER
 $PowerBIPremium = "c1d032e0-5619-4761-9b5c-75b6831e1711"
-#Microsoft 365 Business Premium
+# Microsoft 365 Business Premium
 $SPB = "cbdc14ab-d96c-4c30-b9f4-6ada7cdc1d46"
-#O365_BUSINESS_ESSENTIALS (Business Basic)
+# O365_BUSINESS_ESSENTIALS (Business Basic)
 $M365BB = "3b555118-da6a-4418-894f-7df1e2096870"
-#EXCHANGESTANDARD
+# EXCHANGESTANDARD
 $ExchangeOnlinePlan1 = "4b9405b0-7788-4568-add1-99614e613b69"
-#EXCHANGEENTERPRISE
+# EXCHANGEENTERPRISE
 $ExchangeOnlinePlan2 = "19ec0d23-8335-4cbd-94ac-6050e30712fa"
-#EXCHANGEDESKLESS
+# EXCHANGEDESKLESS
 $ExchangeOnlineKiosk = "80b2d799-d2ba-4d2a-8842-fb0d0f3a4b82"
-#O365_BUSINESS_PREMIUM (Business Standard)
+# O365_BUSINESS_PREMIUM (Business Standard)
 $M365BS = "f245ecc8-75af-4f8e-b61f-27d8114de5f3"
-#Powerapps Premium
+# Powerapps Premium
 $POWERAPPS_PER_USER = "b30411f5-fea1-4a59-9ad9-3db7c7ead579"
-#Power Automate Premium
+# Power Automate Premium
 $POWERAUTOMATE_ATTENDED_RPA = "eda1941c-3c4f-4995-b5eb-e85a42175ab9"
-#Microsoft_365_F1_EEA_(no_Teams)
+# Microsoft_365_F1_EEA_(no_Teams)
 $F1 = "0666269f-b167-4c5b-a76f-fc574f2b1118"
-#FLOW_PER_USER
+# FLOW_PER_USER
 $PowerAutomatePerUser = "4a51bf65-409c-4a91-b845-1121b571cc9d"
-#Visio Plan 2
+# Visio Plan 2
 $VISIOCLIENT = "c5928f49-12ba-48f7-ada3-0d743a3601d5"
-#Microsoft 365 Copilot
+# Microsoft 365 Copilot
 $Microsoft_365_Copilot = "639dec6b-bb19-468b-871c-c5c441c4b0cb"
-#Office 365 Extra File Storage
+# Office 365 Extra File Storage
 $SHAREPOINTSTORAGE = "99049c9c-6011-4908-bf17-15f496e6519d"
+# Microsoft Teams Rooms Pro
+$Microsoft_Teams_Rooms_Pro = "4cde982a-ede4-4409-9ae6-b003453c8ea6"
 #endregion Setter variabler for software ObjectID for de forskjellige lisenstypene
 
 #region Lister opp totalt antall lisenser pr subscription
@@ -116,6 +118,10 @@ $PowerBIPremiumUnassigned = $PowerBIPremiumLicensecount+$PowerBIPremiumUnassigne
 #Office365 Extra File Storage
 $SHAREPOINTSTORAGE = "99049c9c-6011-4908-bf17-15f496e6519d"
 $SharepointLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "SHAREPOINTSTORAGE" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
+# Microsoft Teams Rooms Pro - totalsummer
+$TRProLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq $TeamsRoomsProPartNumber } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
+$TRProUnassignedcount = Get-MgSubscribedSku | Where-Object { $_.SkuPartnumber -eq $TeamsRoomsProPartNumber } | Select-Object -Property ActiveUnits, ConsumedUnits, SkuPartNumber,@{L='SpareLicenses';E={$_.ActiveUnits - $_.ConsumedUnits}} | Select SkuPartNumber, SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$TRProUnassigned = $TRProLicensecount + $TRProUnassignedcount
 #endregion Lister opp totalt antall lisenser pr subscription
 
 
@@ -171,6 +177,10 @@ write-output "Office365 Extra File Storage (Utvidelse Sharepointlagring) = Kunde
 "" | out-file -append "$FilePath" -Encoding ASCII
 Write-Output "-----------------------------------------------------------" | out-file -append "$FilePath" -Encoding UTF8
 "" | out-file -append "$FilePath" -Encoding ASCII
+
+write-output "Microsoft Teams Rooms Pro = Kunde har totalt $TRProLicensecount lisenser" | out-file -append "$FilePath" -Encoding UTF8
+write-output "Microsoft Teams Rooms Pro = Kunde har $TRProUnassigned utildelte lisenser" | out-file -append "$FilePath" -Encoding UTF8
+"" | out-file -append "$FilePath" -Encoding ASCII
 #endregion Lister opp totalt antall lisenser på kunde
 
 #region Microsoft 365 Business Premium
@@ -185,7 +195,7 @@ $RomsdalenM365BP = @($RomsdalenM365BPlisens).count
 $FjellheisenM365BPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $SPB -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenM365BP = @($FjellheisenM365BPlisens).count
 #Snow Hotel Kirkenes
-$SnowHotelM365BPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $SPB -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelM365BPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $SPB -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelM365BP = @($SnowHotelM365BPlisens).count
 #Arctic Train
 $ArcticTrainM365BPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $SPB -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -215,13 +225,13 @@ $RomsdalenM365BS = @($RomsdalenM365BSlisens).count
 $FjellheisenM365BSlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $M365BS -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenM365BS = @($FjellheisenM365BSlisens).count
 #Snow Hotel Kirkenes
-$SnowHotelM365BSlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $M365BS -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelM365BSlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $M365BS -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelM365BS = @($SnowHotelM365BSlisens).count
 #Arctic Train
-$ArcticTrainM365BSlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $skuId -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
+$ArcticTrainM365BSlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $M365BS -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
 $ArcticTrainM365BS = @($ArcticTrainM365BSlisens).count
 #Sommarøy Arctic Hotel AS
-$SommarøyM365BSlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $skuId -and $_.Department -like "Sommarøy Arctic Hotel AS"} | Select-Object DisplayName, UserPrincipalName
+$SommarøyM365BSlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $M365BS -and $_.Department -like "Sommarøy Arctic Hotel AS"} | Select-Object DisplayName, UserPrincipalName
 $SommarøyM365BS = @($SommarøyM365BSlisens).count
 
 
@@ -246,7 +256,7 @@ $RomsdalenM365BB = @($RomsdalenM365BBlisens).count
 $FjellheisenM365BBlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $M365BB -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenM365BB = @($FjellheisenM365BBlisens).count
 #Snow Hotel Kirkenes
-$SnowHotelM365BBlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $M365BB -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelM365BBlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $M365BB -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelM365BB = @($SnowHotelM365BBlisens).count
 #Arctic Train
 $ArcticTrainM365BBlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $M365BB -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -276,7 +286,7 @@ $RomsdalenCOP = @($RomsdalenCOPlisens).count
 $FjellheisenCOPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $Microsoft_365_Copilot -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenCOP = @($FjellheisenCOPlisens).count
 #Snow Hotel Kirkenes
-$SnowHotelCOPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $Microsoft_365_Copilot -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelCOPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $Microsoft_365_Copilot -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelCOP = @($SnowHotelCOPlisens).count
 #Arctic Train
 $ArcticTrainCOPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $Microsoft_365_Copilot -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -307,7 +317,7 @@ $RomsdalenEXO1 = @($RomsdalenEXO1lisens).count
 $FjellheisenEXO1lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlinePlan1 -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenEXO1 = @($FjellheisenEXO1lisens).count
 #Snow Hotel Kirkenes
-$SnowHotelEXO1lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlinePlan1 -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelEXO1lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlinePlan1 -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelEXO1 = @($SnowHotelEXO1lisens).count
 #Arctic Train
 $ArcticTrainEXO1lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlinePlan1 -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -338,7 +348,7 @@ $RomsdalenEXOP2 = @($RomsdalenEXOP2lisens).count
 $FjellheisenEXOP2lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlinePlan2 -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenEXOP2 = @($FjellheisenEXOP2lisens).count
 #Snow Hotel Kirkenes
-$SnowHotelEXOP2lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlinePlan2 -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelEXOP2lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlinePlan2 -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelEXOP2 = @($SnowHotelEXOP2isens).count-1
 #Arctic Train
 $ArcticTrainEXOP2lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlinePlan2 -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -369,7 +379,7 @@ $RomsdalenEXOK = @($RomsdalenEXOKlisens).count
 $FjellheisenEXOKlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlineKiosk -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenEXOK = @($FjellheisenEXOKlisens).count
 #Snow Hotel Kirkenes
-$SnowHotelEXOKlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlineKiosk -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelEXOKlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlineKiosk -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelEXOK = @($SnowHotelEXOKisens).count
 #Arctic Train
 $ArcticTrainEXOKlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $ExchangeOnlineKiosk -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -400,7 +410,7 @@ $RomsdalenPBIP = @($RomsdalenPBIPlisens).count
 $FjellheisenPBIPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $POWER_BI_PRO -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenPBIP = @($FjellheisenPBIPlisens).count
 #Snow Hotel Kirkenes
-$SnowHotelPBIPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $POWER_BI_PRO -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelPBIPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $POWER_BI_PRO -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelPBIP = @($SnowHotelPBIPisens).count-1
 #Arctic Train
 $ArcticTrainPBIPlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $POWER_BI_PRO -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -431,7 +441,7 @@ $RomsdalenPBIPU = @($RomsdalenPBIPUlisens).count
 $FjellheisenPBIPUlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $PowerBIPremium -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenPBIPU = @($FjellheisenPBIPUlisens).count
 #Snow Hotel Kirkenes
-$SnowHotelPBIPUlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $PowerBIPremium -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelPBIPUlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $PowerBIPremium -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelPBIPU = @($SnowHotelPBIPUlisens).count
 #Arctic Train
 $ArcticTrainPBIPUlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $PowerBIPremium -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -462,7 +472,7 @@ $RomsdalenPAU = @($RomsdalenPAUlisens).count
 $FjellheisenPAUlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $PowerAutomatePerUser -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenPAU = @($FjellheisenPAUlisens).count
 #Snow Hotel Kirkenes
-$SnowHotelPAUlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $PowerAutomatePerUser -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelPAUlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $PowerAutomatePerUser -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelPAU = @($SnowHotelPAUlisens).count
 #Arctic Train
 $ArcticTrainPAUlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $PowerAutomatePerUser -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -492,7 +502,7 @@ $RomsdalenF1 = @($RomsdalenF1lisens).count
 $FjellheisenF1lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $F1 -and $_.Department -like "Fjellheisen AS"} | Select-Object DisplayName, UserPrincipalName
 $FjellheisenF1 = @($FjellheisenF1lisens).count
 #Snow Hotel Kirkenes
-$SnowHotelF1lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $F1 -and $_.CompanyName -like "Snowhotel Kirkenes"} | Select-Object DisplayName, UserPrincipalName
+$SnowHotelF1lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,CompanyName" | Where-Object {$_.AssignedLicenses.SkuId -contains $F1 -and ($_.CompanyName -like "Snowhotel Kirkenes" -or $_.CompanyName -like "Snow Resort Kirkenes")} | Select-Object DisplayName, UserPrincipalName
 $SnowHotelF1 = @($SnowHotelF1lisens).count
 #Arctic Train
 $ArcticTrainF1lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {$_.AssignedLicenses.SkuId -contains $F1 -and $_.Department -like "Arctic Train AS"} | Select-Object DisplayName, UserPrincipalName
@@ -509,6 +519,25 @@ Write-Output "Arctic Train: $ArcticTrainF1" | out-file -append "$FilePath" -Enco
 Write-Output "Sommarøy Arctic Hotel AS: $SommarøyF1" | out-file -append "$FilePath" -Encoding UTF8
 "" | out-file -append "$FilePath" -Encoding ASCII
 #endregion Microsoft 365 F1
+
+#region #region Microsoft Teams Rooms Pro
+Write-Output "Microsoft Teams Rooms Pro" | out-file -append "$FilePath" -Encoding UTF8
+
+$NTCTRProLisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object { $_.AssignedLicenses.SkuId -contains $TeamsRoomsPro -and $_.Department -like "NTC" } | Select-Object DisplayName, UserPrincipalName
+$NTCTRPro = @($NTCTRProLisens).count
+
+$RomsdalenTRProLisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" |
+  Where-Object { $_.AssignedLicenses.SkuId -contains $TeamsRoomsPro -and $_.Department -like "Romsdalen" } |
+  Select-Object DisplayName, UserPrincipalName
+$RomsdalenTRPro = @($RomsdalenTRProLisens).count
+
+# ... gjenta for Fjellheisen AS, Snowhotel Kirkenes/Snow Resort Kirkenes (CompanyName), Arctic Train AS, Sommarøy Arctic Hotel AS
+
+Write-Output "NTC: $NTCTRPro" | out-file -append "$FilePath" -Encoding UTF8
+Write-Output "Romsdalen: $RomsdalenTRPro" | out-file -append "$FilePath" -Encoding UTF8
+# ... resten
+"" | out-file -append "$FilePath" -Encoding ASCII
+#endregion Microsoft Teams Rooms Pro
 
 
 #Lisensierte brukere
@@ -599,5 +628,17 @@ Write-Output "-----------------------------------------------------------" | out
 Write-Output "OVERSIKT OVER BRUKERE MED MICROSOFT 365 F1 LISENS" | out-file -append "$FilePath" -Encoding UTF8
 Write-Output "***************************************************************" | out-file -append "$FilePath" -Encoding UTF8
 Write-Output $F1Users | out-file -append "$FilePath" -Encoding UTF8
+Write-Output "" | out-file -append "$FilePath" -Encoding ASCII
+Write-Output "-----------------------------------------------------------" | out-file -append "$FilePath" -Encoding UTF8
+
+# Lister opp brukere med Microsoft Teams Rooms Pro lisens
+Write-Output "OVERSIKT OVER BRUKERE MED MICROSOFT TEAMS ROOMS PRO LISENS" | out-file -append "$FilePath" -Encoding UTF8
+Write-Output "***************************************************************" | out-file -append "$FilePath" -Encoding UTF8
+
+$TeamsRoomsProUsers = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses" |
+  Where-Object { $_.AssignedLicenses -and $_.AssignedLicenses.SkuId -contains $TeamsRoomsPro } |
+  Select-Object DisplayName, UserPrincipalName
+
+Write-Output $TeamsRoomsProUsers | out-file -append "$FilePath" -Encoding UTF8
 Write-Output "" | out-file -append "$FilePath" -Encoding ASCII
 Write-Output "-----------------------------------------------------------" | out-file -append "$FilePath" -Encoding UTF8
