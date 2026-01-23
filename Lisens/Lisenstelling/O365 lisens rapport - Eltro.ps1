@@ -49,22 +49,22 @@ Write-Output "-----------------------------------------------------------" | out
 
 #Sjekket antall lisenser og utildelte lisenser i tenanten
 $SPBLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "SPB" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$SPBUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "SPB"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$SPBUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "SPB"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $SPBUnassigned = $SPBLicensecount+$SPBUnassignedcount
 $O365BSLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "O365_BUSINESS_PREMIUM" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$O365BSUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "O365_BUSINESS_PREMIUM"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$O365BSUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "O365_BUSINESS_PREMIUM"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $O365BSUnassigned = $O365BSLicensecount+$O365BSUnassignedcount
 $EXOP1Licensecount = Get-MgSubscribedSku  | Where-Object { $_.SkuPartNumber -eq "EXCHANGESTANDARD" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$EXOP1Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGESTANDARD"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$EXOP1Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGESTANDARD"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $EXOP1Unassigned = $EXOP1Licensecount+$EXOP1Unassignedcount
 $EXOP2Licensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "EXCHANGEENTERPRISE" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$EXOP2Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGEENTERPRISE"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$EXOP2Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGEENTERPRISE"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $EXOP2Unassigned = $EXOP2Licensecount+$EXOP2Unassignedcount
 $F1Licensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "M365_F1_COMM" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$F1Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "M365_F1_COMM"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$F1Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "M365_F1_COMM"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $F1Unassigned = $F1Licensecount+$F1Unassignedcount
 $PAPLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "POWERAPPS_PER_APP" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$PAPUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "POWERAPPS_PER_APP"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$PAPUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "POWERAPPS_PER_APP"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $PAPUnassigned = $PAPUnassignedcount
 
 

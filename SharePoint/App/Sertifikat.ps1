@@ -22,7 +22,7 @@ $cert = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "CN
 Export-PfxCertificate -Cert $cert -FilePath "C:\Cert\PnP.PowerShell.pfx" -Password (ConvertTo-SecureString "Chowtime7-Affair-Praising-Premid" -AsPlainText -Force)
 
 # Finn sertifikat
-Get-ChildItem Cert:\CurrentUser\My | Select Subject, Thumbprint
+Get-ChildItem Cert:\CurrentUser\My | Select-Object Subject, Thumbprint
 
 
 # Last opp public key fra PFX i Entra App Registration
