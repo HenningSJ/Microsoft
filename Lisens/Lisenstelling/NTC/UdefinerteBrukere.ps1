@@ -1,4 +1,4 @@
-Connect-MgGraph -Scopes "User.Read.All"
+Connect-MgGraph -Scopes "User.Read.All" -UseDeviceCode
 
 # Hent alle brukere med relevante felter
 $users = Get-MgUser -All -Property "DisplayName,UserPrincipalName,Department,CompanyName,UserType,AssignedLicenses"

@@ -47,20 +47,24 @@ $PROJECTPROFESSIONAL = "53818b1b-4a27-454b-8896-0dba576410e6"
 
 #Microsoft 365 Business Premium
 $M365BPLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "SPB" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$M365BPUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "SPB"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$M365BPUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "SPB"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $M365BPUnassigned = $M365BPLicensecount+$M365BPUnassignedcount
 #Exchange Online Plan 1
 $EXO1Licensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "EXCHANGESTANDARD" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$EXO1Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGESTANDARD"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$EXO1Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGESTANDARD"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $EXO1Unassigned = $EXO1Licensecount+$EXO1Unassignedcount
 #Exchange Online Plan 2
 $EXO2Licensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "EXCHANGEENTERPRISE" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$EXO2Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGEENTERPRISE"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$EXO2Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGEENTERPRISE"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $EXO2Unassigned = $EXO2Licensecount+$EXO2Unassignedcount
 #Project Plan 3
 $ProjectP3Licensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "PROJECTPROFESSIONAL" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$ProjectP3Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "PROJECTPROFESSIONAL"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$ProjectP3Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "PROJECTPROFESSIONAL"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $ProjectP3Unassigned = $ProjectP3Licensecount+$ProjectP3Unassignedcount
+#Visio
+$VISLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "VISIOCLIENT" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
+$VISUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "VISIOCLIENT"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$VISUnassigned = $VISLicensecount+$VISUnassignedcount
 
 #Lister opp totalt antall lisenser på kunde
 
@@ -76,6 +80,9 @@ write-output "Exchange Online Plan 2 = Kunde har $EXO2Unassigned utildelte lisen
 write-output "Project-Abonnement 3 = Kunde har totalt $ProjectP3Licensecount lisenser" | out-file -append "$FilePath" -Encoding UTF8
 write-output "Project-Abonnement 3 = Kunde har $ProjectP3Unassigned utildelte lisenser" | out-file -append "$FilePath" -Encoding UTF8
 "" | out-file -append "$FilePath" -Encoding ASCII
+write-output "Visio Plan 2 = Kunde har totalt $VISLicensecount lisenser" | out-file -append $FilePath -Encoding UTF8
+write-output "Visio Plan 2 = Kunde har $VISUnassigned utildelte lisenser" | out-file -append $FilePath -Encoding UTF8
+"" | out-file -append $FilePath -Encoding ASCII
 Write-Output "-----------------------------------------------------------" | out-file -append "$FilePath" -Encoding UTF8
 "" | out-file -append "$FilePath" -Encoding ASCII
 
@@ -146,6 +153,23 @@ Write-Output "NT Entreprenør: $NTEntreprenorProject3" | out-file -append "$File
 Write-Output "NT Byggservice: $NTByggserviceProject3" | out-file -append "$FilePath" -Encoding UTF8
 Write-Output "NT Eiendom: $NTEiendomProject3" | out-file -append "$FilePath" -Encoding UTF8
 "" | out-file -append "$FilePath" -Encoding ASCII
+
+#Visio Plan 2
+Write-Output "Visio Plan 2" | Out-File -Append $FilePath -Encoding UTF8
+#NT Entreprenør
+$NTEntreprenorVIS2lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {($_.AssignedLicenses | Where-Object { $_.SkuId -eq $VISIOCLIENT })-and $_.Department -eq "BPA" } | Select-Object DisplayName, UserPrincipalName
+$NTEntreprenorVIS2 = @($NTEntreprenorVIS2lisens).Count
+#NT Byggservice
+$NTByggserviceVIS2lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {($_.AssignedLicenses | Where-Object { $_.SkuId -eq $VISIOCLIENT })-and $_.Department -eq "Hemis" } | Select-Object DisplayName, UserPrincipalName
+$NTByggserviceVIS2 = @($NTByggserviceVIS2lisens).Count
+#NT Eiendom
+$nteiendomVIS2lisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses,Department" | Where-Object {($_.AssignedLicenses | Where-Object { $_.SkuId -eq $VISIOCLIENT })-and $_.Department -eq "Eiendom" } | Select-Object DisplayName, UserPrincipalName
+$nteiendomVIS2 = @($nteiendomVIS2lisens).Count
+# Skriv resultatene til fil
+Write-Output "NT Entreprenør: $NTEntreprenorVIS2" | out-file -append $FilePath -Encoding UTF8
+Write-Output "NT Byggservice: $NTByggserviceVIS2" | out-file -append $FilePath -Encoding UTF8
+Write-Output "NT Eiendom: $nteiendomVIS2" | out-file -append $FilePath -Encoding UTF8
+"" | out-file -append $FilePath -Encoding ASCII
 
 #Summerer lisenser som inkludererer Exchange Online service
 $NTEBackup = $NTEntreprenorEXOP+$NTEntreprenorM365BP

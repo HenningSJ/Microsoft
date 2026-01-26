@@ -25,7 +25,7 @@ $ErrorActionPreference = 'Stop'
 # 1) Graph-tilkobling (read-only)
 # ---------------------------------------------
 try { Disconnect-MgGraph -ErrorAction SilentlyContinue | Out-Null } catch {}
-Connect-MgGraph -Scopes "User.Read.All","Directory.Read.All" | Out-Null
+Connect-MgGraph -Scopes "User.Read.All","Directory.Read.All" -UseDeviceCode
 
 # ---------------------------------------------
 # 2) Rapportfil
