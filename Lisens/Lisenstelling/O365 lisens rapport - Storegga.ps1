@@ -11,7 +11,7 @@ Script av:      Kim Skog
 #Koble fra eksisterende Microsoft Graph API
 Disconnect-MgGraph
 #Koble til Microsoft Graph API
-Connect-MgGraph -Scopes "User.Read.All", "Directory.Read.All"
+Connect-MgGraph -Scopes "User.Read.All", "Directory.Read.All" -UseDeviceCode
 
 #Hente lisensinformasjon om alle lisensene
 #Get-MgSubscribedSku | Select-Object SkuPartNumber, ActiveUnits, ConsumedUnits
@@ -72,6 +72,8 @@ write-output "Exchange Online Plan 1 = Kunde har $EXO1Unassigned utildelte lisen
 "" | out-file -append "$FilePath" -Encoding ASCII
 write-output "Microsoft Copilot = Kunde har totalt $M365COPLicensecount lisenser" | out-file -append "$FilePath" -Encoding UTF8
 write-output "Microsoft Copilot = Kunde har $M365COPUnassigned utildelte lisenser" | out-file -append "$FilePath" -Encoding UTF8
+"" | out-file -append "$FilePath" -Encoding ASCII
+Write-Output "-----------------------------------------------------------" | out-file -append "$FilePath" -Encoding UTF8
 "" | out-file -append "$FilePath" -Encoding ASCII
 
 #region Lisenser pr selskap

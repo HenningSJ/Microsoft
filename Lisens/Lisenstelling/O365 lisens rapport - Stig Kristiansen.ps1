@@ -29,7 +29,8 @@ $SPB = "cbdc14ab-d96c-4c30-b9f4-6ada7cdc1d46"
 $PROJECTPROFESSIONAL = "53818b1b-4a27-454b-8896-0dba576410e6"
 #Visio Plan 2
 $VISIOCLIENT = "c5928f49-12ba-48f7-ada3-0d743a3601d5"
-
+#Microsoft 365 Copilot
+$Microsoft_365_Copilot = "639dec6b-bb19-468b-871c-c5c441c4b0cb"
 
 #Setter filepath hvor rapportfilen skal lagres
 $FilePath = "C:\temp\O365Users-Maskinentreprenør Stig Kristiansen.txt"
@@ -53,7 +54,9 @@ $PROJUnassigned = $PROJLicensecount+$PROJUnassignedcount
 $VIS2Licensecount = Get-MgSubscribedSku  | Where-Object { $_.SkuPartNumber -eq "VISIOCLIENT" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
 $VIS2Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "VISIOCLIENT"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $VIS2Unassigned = $VIS2Licensecount+$VIS2Unassignedcount
-
+$Microsoft_365_CopilotLicensecount = Get-MgSubscribedSku  | Where-Object { $_.SkuPartNumber -eq "Microsoft_365_Copilot" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
+$Microsoft_365_CopilotUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "Microsoft_365_Copilot"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$Microsoft_365_CopilotUnassigned = $Microsoft_365_CopilotLicensecount+$Microsoft_365_CopilotUnassignedcount
 
 #Lister opp totalt antall lisenser på kunde
 write-output "Microsoft 365 Business Premium = Kunde har totalt $SPBLicensecount lisenser" | out-file -append $FilePath -Encoding UTF8
@@ -64,6 +67,9 @@ write-output "Planner and Project Plan 3 = Kunde har $PROJUnassigned utildelte l
 "" | out-file -append $FilePath -Encoding ASCII
 write-output "Visio Plan 2 = Kunde har totalt $VIS2Licensecount lisenser" | out-file -append $FilePath -Encoding UTF8
 write-output "Visio Plan 2 = Kunde har $VIS2Unassigned utildelte lisenser" | out-file -append $FilePath -Encoding UTF8
+"" | out-file -append $FilePath -Encoding ASCII
+write-output "Microsoft 365 Copilot = Kunde har totalt $Microsoft_365_CopilotLicensecount lisenser" | out-file -append $FilePath -Encoding UTF8
+write-output "Microsoft 365 Copilot = Kunde har $Microsoft_365_CopilotUnassigned utildelte lisenser" | out-file -append $FilePath -Encoding UTF8
 "" | out-file -append $FilePath -Encoding ASCII
 Write-Output "-----------------------------------------------------------" | out-file -append $FilePath -Encoding UTF8
 "" | out-file -append $FilePath -Encoding ASCII
@@ -111,3 +117,17 @@ $VACVIS = @($VACVIS2lisens).Count
 Write-Output "Maskinentreprenør Stig Kristiansen: $MSKVIS2" | out-file -append $FilePath -Encoding UTF8
 Write-Output "Vacumkjempen VVS: $VACVIS" | out-file -append $FilePath -Encoding UTF8
 "" | out-file -append $FilePath -Encoding ASCII
+
+#Copilot
+Write-Output "Microsoft 365 Copilot" | Out-File -Append $FilePath -Encoding UTF8
+# Hent brukere med Microsoft 365 Copilot-lisens for Maskinentreprenør Stig Kristiansen
+$MSKCopilotlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses" | Where-Object {($_.AssignedLicenses | Where-Object { $_.SkuId -eq $Microsoft_365_Copilot }) -and ($_.UserPrincipalName -like "*@stig-kristiansen.no") } | Select-Object DisplayName, UserPrincipalName
+$MSKCopilot = @($MSKCopilotlisens).Count
+# Hent brukere med Microsoft 365 Copilot-lisens for Vacumkjempen
+$VACCopilotlisens = Get-MgUser -All -Property "DisplayName,UserPrincipalName,AssignedLicenses" | Where-Object {($_.AssignedLicenses | Where-Object { $_.SkuId -eq $Microsoft_365_Copilot }) -and ($_.UserPrincipalName -like "*@vacumkjempen.no") } | Select-Object DisplayName, UserPrincipalName
+$VACCopilot = @($VACCopilotlisens).Count
+# Skriv resultatene til fil
+Write-Output "Maskinentreprenør Stig Kristiansen: $MSKCopilot" | out-file -append $FilePath -Encoding UTF8
+Write-Output "Vacumkjempen VVS: $VACCopilot" | out-file -append $FilePath -Encoding UTF8
+"" | out-file -append $FilePath -Encoding ASCII
+

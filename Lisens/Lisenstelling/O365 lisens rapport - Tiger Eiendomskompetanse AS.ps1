@@ -11,7 +11,7 @@ Script av:      Kim Skog
 #Koble fra eksisterende Microsoft Graph API
 Disconnect-MgGraph
 #Koble til Microsoft Graph API
-Connect-MgGraph -Scopes "User.Read.All", "Directory.Read.All"
+Connect-MgGraph -Scopes "User.Read.All", "Directory.Read.All" -UseDeviceCode
 #Hente lisensinformasjon om alle lisensene
 #Get-MgSubscribedSku | Select-Object SkuPartNumber, ActiveUnits, ConsumedUnits
 #Informasjon om en spesifik lisenstype
