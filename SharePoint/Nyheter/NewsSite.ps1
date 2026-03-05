@@ -1,8 +1,8 @@
 
-Connect-SPOService -Url https://<tenant>-admin.sharepoint.com
+Connect-SPOService -Url https://itpartnerno-admin.sharepoint.com
 
-Set-SPOOrgNewsSite -OrgNewsSiteUrl "https://<tenant>.sharepoint.com/sites/<nyhetsside>"
+Set-SPOOrgNewsSite -OrgNewsSiteUrl "https://itpartnerno.sharepoint.com/sites/nyheter"
 
 Get-SPOOrgNewsSite
 
-#Remove-SPOOrgNewsSite -OrgNewsSiteUrl "https://<tenant>.sharepoint.com/sites/<nyhetsside>"
+#Remove-SPOOrgNewsSite -OrgNewsSiteUrl "https://itpartnerno.sharepoint.com/sites/nyheter"
