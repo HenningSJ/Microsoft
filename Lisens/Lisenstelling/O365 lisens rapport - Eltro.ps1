@@ -6,12 +6,15 @@ Script av:      Kim Skog
 ============================================================================================
 #>
 
+$TenantId = "185b631d-f345-4e08-833d-70d929ead841"
+$ClientId = "7de25f71-0ade-47d0-9f1c-3717d17ab32d"
+$CertThumbprint = "C3AAA19174488E257748BF732523B3534841865D"
 
 
 #Koble fra eksisterende Microsoft Graph API
-Disconnect-MgGraph
+Disconnect-MgGraph -erroraction SilentlyContinue
 #Koble til Microsoft Graph API
-Connect-MgGraph -Scopes "User.Read.All", "Directory.Read.All"
+Connect-MgGraph -TenantId $TenantId -ClientId $ClientId -CertificateThumbprint $CertThumbprint
 #Hente lisensinformasjon om alle lisensene
 #Get-MgSubscribedSku | Select-Object SkuPartNumber, ActiveUnits, ConsumedUnits
 #Informasjon om en spesifik lisenstype

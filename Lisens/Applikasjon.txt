@@ -1,0 +1,11 @@
+Client ID
+7de25f71-0ade-47d0-9f1c-3717d17ab32d
+
+Dele med kunde:
+https://login.microsoftonline.com/common/adminconsent?client_id=7de25f71-0ade-47d0-9f1c-3717d17ab32d
+
+
+Tenant ID:
+
+Eltro: 185b631d-f345-4e08-833d-70d929ead841
+HPNN: 5b2363ca-c61b-4340-bc99-efcab96c4df9
