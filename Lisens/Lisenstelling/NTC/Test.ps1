@@ -25,7 +25,13 @@ $ErrorActionPreference = 'Stop'
 # 1) Graph-tilkobling (read-only)
 # ---------------------------------------------
 try { Disconnect-MgGraph -ErrorAction SilentlyContinue | Out-Null } catch {}
-Connect-MgGraph -Scopes "User.Read.All","Directory.Read.All" -UseDeviceCode
+
+#Koble til Microsoft Graph API
+$TenantId = "8e5367a7-2ca1-49d1-978c-8c5c56aa874d"
+$ClientId = "7de25f71-0ade-47d0-9f1c-3717d17ab32d"
+$CertThumbprint = "C3AAA19174488E257748BF732523B3534841865D"
+
+Connect-MgGraph -TenantId $TenantId -ClientId $ClientId -CertificateThumbprint $CertThumbprint
 
 # ---------------------------------------------
 # 2) Rapportfil
