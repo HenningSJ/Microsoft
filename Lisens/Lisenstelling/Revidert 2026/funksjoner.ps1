@@ -306,7 +306,8 @@ function Get-AdministrationLicenseCount {
 # NTC audit: Count / Non-classified
 # Organizations: @{Name="NTC"; Match={ $_.Department -eq "NTC" } }
 # ------------------------------
-function Count-ByOrganization {
+
+function Get-OrganizationCounts {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][array]$Users,
@@ -315,10 +316,11 @@ function Count-ByOrganization {
 
     $counts = @{}
 
-    # Viktig: håndter tom brukerliste eksplisitt
+    # ✅ Kritisk: tåler tom brukerliste
     if (-not $Users -or $Users.Count -eq 0) {
         foreach ($org in $Organizations) {
- }
+            $counts[$org.Name] = 0
+        }
         return $counts
     }
 
@@ -328,6 +330,7 @@ function Count-ByOrganization {
 
     return $counts
 }
+
 
 function Get-NonClassifiedUsers {
     [CmdletBinding()]

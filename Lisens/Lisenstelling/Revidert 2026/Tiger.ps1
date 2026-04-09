@@ -1,3 +1,11 @@
+<#
+=============================================================================================
+Name:           TigerEiendom.ps1
+Description:    Lisensrapport for Tiger Eiendomskompetanse AS / Tromsø Næringsmegling AS
+Revidert av:    Henning Smedvik Johnsen
+Basert på:      felles funksjoner.ps1
+=============================================================================================
+#>
 
 #region Import felles funksjoner
 . "C:\VS Code\Microsoft\Lisens\Lisenstelling\Revidert 2026\funksjoner.ps1"
@@ -6,30 +14,35 @@
 #region Konfigurasjon
 
 $Config = @{
-    TenantId       = "4b6097f0-48ba-46d9-be7f-6b4db0db5008"
+    TenantId       = "a0ab6b13-710d-4775-b475-e8cc278db94d"
     ClientId       = "7de25f71-0ade-47d0-9f1c-3717d17ab32d"
     CertThumbprint = "C3AAA19174488E257748BF732523B3534841865D"
 
-    CustomerName   = "Maskinentreprenør Stig Kristiansen"
+    CustomerName   = "Tiger Eiendom"
 
-    BaseFileName   = "Lisenser-StigKristiansen"
+    BaseFileName   = "Lisenser-TigerEiendom"
     TempDirectory  = "C:\temp\Lisenstelling"
-    OutputDirectory= "C:\Users\Henning\OneDrive - IT Partner Tromsø AS\Lisenstelling\StigKristiansen"
+    OutputDirectory= "C:\Users\Henning\OneDrive - IT Partner Tromsø AS\Lisenstelling\TigerEiendom"
 
-    ExportCSV       = $true
-    IncludeUserLists= $true
+    ExportCSV        = $true
+    IncludeUserLists = $true
 
-    # Domenebasert organisering
-    Organizations = @(
-        @{ Name = "Maskinentreprenør Stig Kristiansen"; Match = { $_.UserPrincipalName -like "*@stig-kristiansen.no" } }
-        @{ Name = "Vacumkjempen VVS";                   Match = { $_.UserPrincipalName -like "*@vacumkjempen.no" } }
+    # Eksplisitte Oslo‑brukere
+    OsloUsers = @(
+        "bes@tigereiendom.no",
+        "ec@tigereiendom.no",
+        "mf@tigereiendom.no",
+        "gb@tigereiendom.no"
     )
 
-    # Lisenser som rapporteres
+    Organizations = @(
+        @{ Name = "Tiger Eiendomskompetanse AS (Oslo)"; Match = { $_.UserPrincipalName -in  $Config.OsloUsers } }
+        @{ Name = "Tromsø Næringsmegling AS";           Match = { $_.UserPrincipalName -notin $Config.OsloUsers } }
+    )
+
     Licenses = @(
         @{ DisplayName = "Microsoft 365 Business Premium"; PartNumbers = @("SPB") }
-        @{ DisplayName = "Planner and Project Plan 3";     PartNumbers = @("PROJECTPROFESSIONAL") }
-        @{ DisplayName = "Visio Plan 2";                   PartNumbers = @("VISIOCLIENT") }
+        @{ DisplayName = "Exchange Online Plan 2";         PartNumbers = @("EXCHANGEENTERPRISE") }
         @{ DisplayName = "Microsoft 365 Copilot";          PartNumbers = @("Microsoft_365_Copilot") }
     )
 }
@@ -49,7 +62,7 @@ if (-not (Connect-M365GraphAPI `
 
 $timestamp = Get-Date -Format "yyyyMMdd_HHmm"
 
-New-Item -ItemType Directory -Path $Config.TempDirectory -Force | Out-Null
+New-Item -ItemType Directory -Path $Config.TempDirectory  -Force | Out-Null
 New-Item -ItemType Directory -Path $Config.OutputDirectory -Force | Out-Null
 
 $txtPath = Join-Path $Config.TempDirectory "$($Config.BaseFileName)-$timestamp.txt"
@@ -61,7 +74,7 @@ $csvPath = Join-Path $Config.TempDirectory "$($Config.BaseFileName)-$timestamp.c
 "-----------------------------------------------------------" | Out-File -Append $txtPath -Encoding UTF8
 "" | Out-File -Append $txtPath
 
-# Hent data én gang
+# Hent tenant‑data én gang
 $AllSkus  = Get-AllTenantSKUs
 $AllUsers = Get-AllUsers
 
@@ -94,28 +107,46 @@ foreach ($lic in $Config.Licenses) {
 
     foreach ($org in $counts.Keys) {
         $csvRows += [PSCustomObject]@{
-            ReportDate   = Get-Date
-            License      = $sum.DisplayName
-            PartNumber  = $sum.PartNumber
-            Organization= $org
-            Count        = $counts[$org]
-            Enabled      = $sum.Enabled
-            Consumed     = $sum.Consumed
-            Unassigned   = $sum.Unassigned
+            ReportDate    = Get-Date
+            License       = $sum.DisplayName
+            PartNumber   = $sum.PartNumber
+            Organization = $org
+            Count         = $counts[$org]
+            Enabled       = $sum.Enabled
+            Consumed      = $sum.Consumed
+            Unassigned    = $sum.Unassigned
         }
     }
 
     if ($Config.IncludeUserLists -and $users.Count -gt 0) {
         Write-UserList -Title $sum.DisplayName -Users $users -OutputPath $txtPath
         Write-DiscrepancyCheck -Title $sum.DisplayName -Summary $sum -Users $users -OutputPath $txtPath
+        Write-NonClassifiedList -Title $sum.DisplayName -Users $users -Organizations $Config.Organizations -OutputPath $txtPath
     }
+
+    "" | Out-File -Append $txtPath
 }
 
-# Eksport
-$csvRows | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8 -Force
+# CSV‑eksport
+if ($Config.ExportCSV -and $csvRows.Count -gt 0) {
+    $csvRows | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8 -Force
+}
 
-Move-Item $txtPath $Config.OutputDirectory -Force
-Move-Item $csvPath $Config.OutputDirectory -Force
+# --- Robust kopiering til OneDrive ---
+Start-Sleep -Milliseconds 200
 
-Write-Host "✓ Rapport ferdig" -ForegroundColor Green
+$destTxt = Join-Path $Config.OutputDirectory (Split-Path $txtPath -Leaf)
+$destCsv = Join-Path $Config.OutputDirectory (Split-Path $csvPath -Leaf)
+
+if (Test-Path $txtPath) {
+    Copy-Item $txtPath $destTxt -Force -ErrorAction Stop
+    Remove-Item $txtPath -Force
+}
+
+if (Test-Path $csvPath) {
+    Copy-Item $csvPath $destCsv -Force -ErrorAction Stop
+    Remove-Item $csvPath -Force
+}
+
+Write-Host "✓ Rapport ferdig – Tiger Eiendom" -ForegroundColor Green
 #endregion

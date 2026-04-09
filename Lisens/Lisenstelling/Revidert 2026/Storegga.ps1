@@ -1,4 +1,5 @@
 
+
 #region Import felles funksjoner
 . "C:\VS Code\Microsoft\Lisens\Lisenstelling\Revidert 2026\funksjoner.ps1"
 #endregion
@@ -6,31 +7,31 @@
 #region Konfigurasjon
 
 $Config = @{
-    TenantId       = "4b6097f0-48ba-46d9-be7f-6b4db0db5008"
+    TenantId       = "ecf33876-da18-4626-b7ed-40fd19fbefb7"
     ClientId       = "7de25f71-0ade-47d0-9f1c-3717d17ab32d"
     CertThumbprint = "C3AAA19174488E257748BF732523B3534841865D"
 
-    CustomerName   = "Maskinentreprenør Stig Kristiansen"
+    CustomerName   = "Storegga"
 
-    BaseFileName   = "Lisenser-StigKristiansen"
-    TempDirectory  = "C:\temp\Lisenstelling"
-    OutputDirectory= "C:\Users\Henning\OneDrive - IT Partner Tromsø AS\Lisenstelling\StigKristiansen"
+    BaseFileName   = "Lisenser-Storegga"
+    TempDirectory  = "C:\temp"
+    OutputDirectory= "C:\Users\Henning\OneDrive - IT Partner Tromsø AS\Lisenstelling\Storegga"
 
     ExportCSV       = $true
     IncludeUserLists= $true
 
-    # Domenebasert organisering
+    # Organisering basert på Department
     Organizations = @(
-        @{ Name = "Maskinentreprenør Stig Kristiansen"; Match = { $_.UserPrincipalName -like "*@stig-kristiansen.no" } }
-        @{ Name = "Vacumkjempen VVS";                   Match = { $_.UserPrincipalName -like "*@vacumkjempen.no" } }
+        @{ Name = "Storegga Entreprenør"; Match = { $_.Department -eq "Entreprenør" } }
+        @{ Name = "Storegga Betong";      Match = { $_.Department -eq "Betong" } }
     )
 
-    # Lisenser som rapporteres
+    # Lisenser som skal rapporteres
     Licenses = @(
         @{ DisplayName = "Microsoft 365 Business Premium"; PartNumbers = @("SPB") }
-        @{ DisplayName = "Planner and Project Plan 3";     PartNumbers = @("PROJECTPROFESSIONAL") }
-        @{ DisplayName = "Visio Plan 2";                   PartNumbers = @("VISIOCLIENT") }
+        @{ DisplayName = "Exchange Online Plan 1";         PartNumbers = @("EXCHANGESTANDARD") }
         @{ DisplayName = "Microsoft 365 Copilot";          PartNumbers = @("Microsoft_365_Copilot") }
+        @{ DisplayName = "OneDrive for Business Plan 2";   PartNumbers = @("WACONEDRIVEENTERPRISE") }
     )
 }
 
@@ -61,7 +62,7 @@ $csvPath = Join-Path $Config.TempDirectory "$($Config.BaseFileName)-$timestamp.c
 "-----------------------------------------------------------" | Out-File -Append $txtPath -Encoding UTF8
 "" | Out-File -Append $txtPath
 
-# Hent data én gang
+# Hent tenant‑data én gang
 $AllSkus  = Get-AllTenantSKUs
 $AllUsers = Get-AllUsers
 
@@ -83,7 +84,7 @@ foreach ($lic in $Config.Licenses) {
         $users = Get-LicenseUsers -Users $AllUsers -SkuId $sum.SkuId
     }
 
-    $counts = Get-OrganizationCounts `
+    $counts = Count-ByOrganization `
         -Users $users `
         -Organizations $Config.Organizations
 
@@ -108,14 +109,24 @@ foreach ($lic in $Config.Licenses) {
     if ($Config.IncludeUserLists -and $users.Count -gt 0) {
         Write-UserList -Title $sum.DisplayName -Users $users -OutputPath $txtPath
         Write-DiscrepancyCheck -Title $sum.DisplayName -Summary $sum -Users $users -OutputPath $txtPath
+        Write-NonClassifiedList -Title $sum.DisplayName -Users $users -Organizations $Config.Organizations -OutputPath $txtPath
     }
+
+    "" | Out-File -Append $txtPath
 }
 
-# Eksport
-$csvRows | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8 -Force
+# Eksport CSV
+if ($Config.ExportCSV -and $csvRows.Count -gt 0) {
+    $csvRows | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8 -Force
+}
 
-Move-Item $txtPath $Config.OutputDirectory -Force
-Move-Item $csvPath $Config.OutputDirectory -Force
 
-Write-Host "✓ Rapport ferdig" -ForegroundColor Green
+# --- Robust overføring til OneDrive ---
+
+$destinationTxt = Join-Path $Config.OutputDirectory (Split-Path $txtPath -Leaf)
+
+Copy-Item -Path $txtPath -Destination $destinationTxt -Force -ErrorAction Stop
+
+
+Write-Host "✓ Rapport ferdig – Storegga" -ForegroundColor Green
 #endregion

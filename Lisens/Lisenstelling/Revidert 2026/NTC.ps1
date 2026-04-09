@@ -116,7 +116,7 @@ foreach ($lic in $Config.Licenses) {
     }
 
     # Per organisasjon
-    $counts = Count-ByOrganization `
+    $counts = Get-OrganizationCounts `
         -Users $users `
         -Organizations $Config.Organizations
 
