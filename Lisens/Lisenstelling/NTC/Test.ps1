@@ -25,7 +25,7 @@ $ErrorActionPreference = 'Stop'
 # 1) Graph-tilkobling (read-only)
 # ---------------------------------------------
 try { Disconnect-MgGraph -ErrorAction SilentlyContinue | Out-Null } catch {}
-Connect-MgGraph -Scopes "User.Read.All","Directory.Read.All" -UseDeviceCode
+Connect-MgGraph -Scopes "User.Read.All","Directory.Read.All"
 
 # ---------------------------------------------
 # 2) Rapportfil
@@ -237,6 +237,7 @@ $PN_COPILOT   = "Microsoft_365_Copilot"      # Microsoft 365 Copilot (valider i 
 $PN_F1        = "Microsoft_365_F1_EEA_(no_Teams)"  # EEA (uten Teams) - valider i tenant
 $PN_SPSTORAGE = "SHAREPOINTSTORAGE"          # Extra SharePoint storage (GB)
 $PN_TR_PRO    = "Microsoft_Teams_Rooms_Pro"  # Teams Rooms Pro
+$PN_PA_PREMIUM = "POWERAUTOMATE_ATTENDED_RPA" # Power Autmate Premium
 
 # ---------------------------------------------
 # 6) Summer per SKU
@@ -254,6 +255,7 @@ $SUM_COPILOT   = Get-SkuSummary $PN_COPILOT
 $SUM_F1        = Get-SkuSummary $PN_F1
 $SUM_SPSTORAGE = Get-SkuSummary $PN_SPSTORAGE
 $SUM_TR_PRO    = Get-SkuSummary $PN_TR_PRO
+$SUM_PA_PREMIUM = Get-SkuSummary $PN_PA_PREMIUM
 
 # ---------------------------------------------
 # 7) Topp: totalsummer per lisens
@@ -269,6 +271,7 @@ Write-LicenseTotals "Exchange Online Kiosk"                  $SUM_EXOK
 Write-LicenseTotals "Power Automate Per user Plan"           $SUM_FLOW_PU
 Write-LicenseTotals "Microsoft 365 F1"                       $SUM_F1
 Write-LicenseTotals "Microsoft 365 Copilot"                  $SUM_COPILOT
+Write-LicenseTotals "Power Automate Premium"                 $SUM_PA_PREMIUM
 
 # SharePoint Extra Storage (GB, ikke "lisenser")
 " Office365 Extra File Storage (Utvidelse SharePoint-lagring) = Kunde har totalt $($SUM_SPSTORAGE.Enabled) GB med ekstra SharePoint-lagring" |
@@ -295,6 +298,7 @@ Write-PerCompanySection -Title "PowerBI Premium" -SkuId $SUM_PBI_PPU.SkuId
 Write-PerCompanySection -Title "Power Automate Users" -SkuId $SUM_FLOW_PU.SkuId
 Write-PerCompanySection -Title "Microsoft 365 F1" -SkuId $SUM_F1.SkuId
 Write-PerCompanySection -Title "Microsoft Teams Rooms Pro" -SkuId $SUM_TR_PRO.SkuId
+Write-PerCompanySection -Title "Power Automate Premium" -SkuId $SUM_PA_PREMIUM.SkuId
 
 # ---------------------------------------------
 # 9) Brukerlister per lisens
@@ -312,6 +316,7 @@ $Users_FLO = Get-LicenseUsers $SUM_FLOW_PU.SkuId
 $Users_COP = Get-LicenseUsers $SUM_COPILOT.SkuId
 $Users_F1  = Get-LicenseUsers $SUM_F1.SkuId
 $Users_TRP = Get-LicenseUsers $SUM_TR_PRO.SkuId
+$Users_PA_PREMIUM = Get-LicenseUsers $SUM_PA_PREMIUM.SkuId
 
 Write-UserList -Title "MICROSOFT 365 BUSINESS STANDARD" -Users $Users_BS
 Write-UserList -Title "MICROSOFT 365 BUSINESS BASIC"   -Users $Users_BB
@@ -325,6 +330,7 @@ Write-UserList -Title "POWER AUTOMATE PER USER"         -Users $Users_FLO
 Write-UserList -Title "MICROSOFT 365 COPILOT"           -Users $Users_COP
 Write-UserList -Title "MICROSOFT 365 F1"                -Users $Users_F1
 Write-UserList -Title "MICROSOFT TEAMS ROOMS PRO"       -Users $Users_TRP
+Write-UserList -Title "POWER AUTOMATE PREMIUM"         -Users $Users_PA_PREMIUM
 
 # ---------------------------------------------
 # 10) Avvikssjekk + ikke-klassifiserte (Business Basic)

@@ -6,7 +6,8 @@ Script av:      Kim Skog
 ============================================================================================
 #>
 
-
+#Exchange Online plan 2 til NT Entreprenør
+#Visio Plan 2 til NT Byggservice
 
 #Koble fra eksisterende Microsoft Graph API
 Disconnect-MgGraph
@@ -55,7 +56,7 @@ $EXO1Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -e
 $EXO1Unassigned = $EXO1Licensecount+$EXO1Unassignedcount
 #Exchange Online Plan 2
 $EXO2Licensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "EXCHANGEENTERPRISE" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$EXO2Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGEENTERPRISE"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$EXO2Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "EXCHANGEENTERPRISE"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $EXO2Unassigned = $EXO2Licensecount+$EXO2Unassignedcount
 #Project Plan 3
 $ProjectP3Licensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "PROJECTPROFESSIONAL" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
@@ -63,7 +64,7 @@ $ProjectP3Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumbe
 $ProjectP3Unassigned = $ProjectP3Licensecount+$ProjectP3Unassignedcount
 #Visio
 $VISLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "VISIOCLIENT" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$VISUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "VISIOCLIENT"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$VISUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "VISIOCLIENT"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $VISUnassigned = $VISLicensecount+$VISUnassignedcount
 
 #Lister opp totalt antall lisenser på kunde
