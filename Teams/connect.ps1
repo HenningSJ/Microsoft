@@ -1,2 +1,3 @@
+install-module MicrosoftTeams
 Import-Module MicrosoftTeams
 connect-microsoftteams

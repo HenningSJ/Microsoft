@@ -5,12 +5,22 @@ Description:    Dette scriptet gir oversikt over alle lisenser som er tilknyttet
 Script av:      Kim Skog
 ============================================================================================
 #>
+<<<<<<< HEAD:Lisens/Lisenstelling/O365 lisens rapport - Helsepartner Nord-Norge.ps1
 
 
+=======
+>>>>>>> 8779dc4d6917ff93cd569353c69988329f9f5fb7:Lisens/Lisenstelling/Utdatert/O365 lisens rapport - Helsepartner Nord-Norge.ps1
 #Koble fra eksisterende Microsoft Graph API
 Disconnect-MgGraph 
+
+
 #Koble til Microsoft Graph API
-Connect-MgGraph -Scopes "User.Read.All", "Directory.Read.All"
+$TenantId = "5b2363ca-c61b-4340-bc99-efcab96c4df9"
+$ClientId = "7de25f71-0ade-47d0-9f1c-3717d17ab32d"
+$CertThumbprint = "C3AAA19174488E257748BF732523B3534841865D"
+
+
+Connect-MgGraph -TenantId $TenantId -ClientId $ClientId -CertificateThumbprint $CertThumbprint
 #Hente lisensinformasjon om alle lisensene
 #Get-MgSubscribedSku | Select-Object SkuPartNumber, ActiveUnits, ConsumedUnits
 #Informasjon om en spesifik lisenstype

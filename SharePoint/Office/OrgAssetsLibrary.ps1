@@ -1,10 +1,10 @@
 
 #Office Template
-Add-SPOOrgAssetsLibrary -LibraryUrl "https://itpartnerno.sharepoint.com/sites/OrgAssetsLibrary/OfficeTemplate" -OrgAssetType OfficeTemplateLibrary
+Add-SPOOrgAssetsLibrary -LibraryUrl "https://itpartnerno.sharepoint.com/sites/BrandCenter/OfficeTemplates" -OrgAssetType OfficeTemplateLibrary
 
 #Font
-Add-SPOOrgAssetsLibrary -LibraryUrl "https://itpartnerno.sharepoint.com/sites/OrgAssetsLibrary/OfficeFont" -OrgAssetType OfficeFontLibrary -CdnType Public
-Set-SPOCustomFontCatalog -FontFolder "C:\Inter" -LibraryUrl https://itpartnerno.sharepoint.com/sites/OrgAssetsLibrary/OfficeFont
+Add-SPOOrgAssetsLibrary -LibraryUrl "https://itpartnerno.sharepoint.com/sites/BrandCenter/OfficeFonts" -OrgAssetType OfficeFontLibrary -CdnType Public
+Set-SPOCustomFontCatalog -FontFolder "C:\Inter" -LibraryUrl https://itpartnerno.sharepoint.com/sites/BrandCenter/OfficeFonts
 
 #Sjekk
 Get-SPOOrgAssetsLibrary
@@ -14,7 +14,7 @@ Get-SPOTenantCdnOrigins -CdnType Private
 Remove-SPOOrgAssetsLibrary -LibraryUrl "https://itpartnerno.sharepoint.com/sites/brandcenter"
 
 #Bilder
-Add-SPOOrgAssetsLibrary -LibraryURL "https://itpartnerno.sharepoint.com/sites/OrgAssetsLibrary/" -OrgAssetType ImageDocumentLibrary -CopilotSearchable $True
+Add-SPOOrgAssetsLibrary -LibraryURL "https://itpartnerno.sharepoint.com/sites/BrandCenter/Bilder" -OrgAssetType ImageDocumentLibrary -CopilotSearchable $True
 
 
 Add-SPOOrgAssetsLibrary -LibraryUrl "https://rafisklaget.sharepoint.com/sites/OrgAssetsLibrary/OfficeTemplate" -OrgAssetType OfficeTemplateLibrary

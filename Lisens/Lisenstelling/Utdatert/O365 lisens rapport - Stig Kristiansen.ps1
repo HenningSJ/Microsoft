@@ -6,11 +6,17 @@ Script av:      Kim Skog
 ============================================================================================
 #>
 
-
 #Koble fra eksisterende Microsoft Graph API
 Disconnect-MgGraph
+
 #Koble til Microsoft Graph API
-Connect-MgGraph -Scopes "User.Read.All", "Directory.Read.All"
+$TenantId = "4b6097f0-48ba-46d9-be7f-6b4db0db5008"
+$ClientId = "7de25f71-0ade-47d0-9f1c-3717d17ab32d"
+$CertThumbprint = "C3AAA19174488E257748BF732523B3534841865D"
+
+Connect-MgGraph -TenantId $TenantId -ClientId $ClientId -CertificateThumbprint $CertThumbprint
+
+
 #Hente lisensinformasjon om alle lisensene
 #Get-MgSubscribedSku | Select-Object SkuPartNumber, ActiveUnits, ConsumedUnits
 #Informasjon om en spesifik lisenstype
@@ -46,16 +52,16 @@ Write-Output "-----------------------------------------------------------" | out
 
 #Sjekket antall lisenser og utildelte lisenser i tenanten
 $SPBLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "SPB" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$SPBUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "SPB"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$SPBUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "SPB"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $SPBUnassigned = $SPBLicensecount+$SPBUnassignedcount
 $PROJLicensecount = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "PROJECTPROFESSIONAL" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$PROJUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "PROJECTPROFESSIONAL"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$PROJUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "PROJECTPROFESSIONAL"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $PROJUnassigned = $PROJLicensecount+$PROJUnassignedcount
 $VIS2Licensecount = Get-MgSubscribedSku  | Where-Object { $_.SkuPartNumber -eq "VISIOCLIENT" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$VIS2Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "VISIOCLIENT"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$VIS2Unassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "VISIOCLIENT"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $VIS2Unassigned = $VIS2Licensecount+$VIS2Unassignedcount
 $Microsoft_365_CopilotLicensecount = Get-MgSubscribedSku  | Where-Object { $_.SkuPartNumber -eq "Microsoft_365_Copilot" } | Select-Object -ExpandProperty PrepaidUnits | Select-Object -ExpandProperty "Enabled"
-$Microsoft_365_CopilotUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "Microsoft_365_Copilot"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | select SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
+$Microsoft_365_CopilotUnassignedcount = Get-MgSubscribedSku | Where-Object {($_.SkuPartnumber) -eq "Microsoft_365_Copilot"} | Select-Object -Property ActiveUnits,ConsumedUnits,SkuPartNumber,@{L=’SpareLicenses’;E={$_.ActiveUnits - $_.ConsumedUnits}} | Select-Object SkuPartNumber,SpareLicenses | Select-Object -ExpandProperty "SpareLicenses"
 $Microsoft_365_CopilotUnassigned = $Microsoft_365_CopilotLicensecount+$Microsoft_365_CopilotUnassignedcount
 
 #Lister opp totalt antall lisenser på kunde

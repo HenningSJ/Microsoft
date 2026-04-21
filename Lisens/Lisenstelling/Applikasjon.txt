@@ -1,0 +1,17 @@
+Client ID
+7de25f71-0ade-47d0-9f1c-3717d17ab32d
+
+Dele med kunde:
+https://login.microsoftonline.com/common/adminconsent?client_id=7de25f71-0ade-47d0-9f1c-3717d17ab32d
+
+
+Tenant ID:
+
+Eltro: 185b631d-f345-4e08-833d-70d929ead841
+HPNN: 5b2363ca-c61b-4340-bc99-efcab96c4df9
+IBID: 256c6ac2-bdec-4852-894d-4995d602734f
+NT Entreprenør: 69104e7f-6c38-41b7-aedf-ba60ffdc6668
+NTC: 8e5367a7-2ca1-49d1-978c-8c5c56aa874d
+Stig K: 4b6097f0-48ba-46d9-be7f-6b4db0db5008
+Storegga: ecf33876-da18-4626-b7ed-40fd19fbefb7
+Tiger: a0ab6b13-710d-4775-b475-e8cc278db94d
