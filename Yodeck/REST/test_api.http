@@ -1,4 +1,16 @@
 
-### Hent alle spillere
+
+@token = yodeck:lk4gtVC9OzvR6lcAXjpLW6pYPZ0tmnjLSznfPe5BmBfSa5_2PttSc3cqLY_O0mf6
+
+### Hent spillere
 GET https://app.yodeck.com/api/v2/screens/
-Authorization: Token yodeck:lk4gtVC9OzvR6lcAXjpLW6pYPZ0tmnjLSznfPe5BmBfSa5_2PttSc3cqLY_O0mf6
+Authorization: Token {{token}}
+
+### Hent workspaces
+GET https://app.yodeck.com/api/v2/workspaces/
+Authorization: Token {{token}}
+
+### Hent users
+GET https://app.yodeck.com/api/v2/users
+Authorization: Token {{token}}
+
