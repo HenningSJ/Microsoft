@@ -1,0 +1,1 @@
+. "C:\VS Code\Microsoft\Yodeck\Funksjoner\LoadYodeckFunctions.ps1"
