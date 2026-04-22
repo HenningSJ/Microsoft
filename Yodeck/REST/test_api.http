@@ -1,0 +1,4 @@
+
+### Hent alle spillere
+GET https://app.yodeck.com/api/v2/screens/
+Authorization: Token yodeck:lk4gtVC9OzvR6lcAXjpLW6pYPZ0tmnjLSznfPe5BmBfSa5_2PttSc3cqLY_O0mf6
