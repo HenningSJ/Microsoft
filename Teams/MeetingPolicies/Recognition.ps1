@@ -1,1 +1,4 @@
 Set-CsTeamsMeetingPolicy -Identity Global -roomAttributeUserOverride Attribute -roomPeopleNameUserOverride On
+
+#Test
+Get-CsTeamsAIPolicy
