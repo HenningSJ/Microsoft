@@ -84,7 +84,7 @@ foreach ($lic in $Config.Licenses) {
         $users = Get-LicenseUsers -Users $AllUsers -SkuId $sum.SkuId
     }
 
-    $counts = Count-ByOrganization `
+    $counts = Get-OrganizationCounts `
         -Users $users `
         -Organizations $Config.Organizations
 
