@@ -188,6 +188,49 @@ function Get-LicenseUsers {
 }
 
 
+function Get-LicenseCountByDomain {
+    <#
+    .SYNOPSIS
+        Teller lisenser basert på e-postdomene
+    .DESCRIPTION
+        Brukes for Eltro og IBID som separerer selskaper via domener
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$SkuId,
+        
+        [Parameter(Mandatory=$true)]
+        [array]$Companies
+    )
+    
+    $results = @{}
+    
+    foreach ($company in $Companies) {
+        try {
+            # Hent alle brukere med denne SKUen
+            $allUsers = Get-MgUser -All `
+                -Property "UserPrincipalName,AssignedLicenses" `
+                -Filter "assignedLicenses/any(x:x/skuId eq $SkuId)" `
+                -ErrorAction Stop
+            
+            # Filtrer på domene (Graph API støtter ikke wildcard i filter)
+            $filteredUsers = $allUsers | Where-Object { 
+                $_.UserPrincipalName -like $company.DomainFilter 
+            }
+            
+            $results[$company.Name] = @($filteredUsers).Count
+            
+        }
+        catch {
+            Write-Warning "Feil ved telling for $($company.Name), SKU $SkuId : $_"
+            $results[$company.Name] = 0
+        }
+    }
+    
+    return $results
+}
+
+
 function Get-LicenseCountByDepartment {
     param(
         [Parameter(Mandatory=$true)][string]$SkuId,
