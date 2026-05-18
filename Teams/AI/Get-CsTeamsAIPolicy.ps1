@@ -1,0 +1,1 @@
+Get-CsTeamsAiPolicy -identity Global | Format-List *
