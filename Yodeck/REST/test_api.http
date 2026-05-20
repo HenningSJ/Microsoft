@@ -14,3 +14,6 @@ Authorization: Token {{token}}
 GET https://app.yodeck.com/api/v2/users
 Authorization: Token {{token}}
 
+### Hent layouts
+GET https://app.yodeck.com/api/v2/layouts
+Authorization: Token {{token}}
