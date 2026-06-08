@@ -6,6 +6,6 @@ Connect-SPOService -Url https://itpartnerno-admin.sharepoint.com
 
 #Get-SPOHomeSite
 
-Set-SPOHomeSite -HomeSiteUrl https://itpartnerno.sharepoint.com -VivaConnectionsDefaultStart:$true
+Set-SPOHomeSite -HomeSiteUrl https://rafisklaget.sharepoint.com -VivaConnectionsDefaultStart:$true
 
   

@@ -1,7 +1,8 @@
 
-Connect-SPOService -Url https://itpartnerno-admin.sharepoint.com
+Connect-SPOService -Url https://rafisklaget-admin.sharepoint.com
 
-Set-SPOOrgNewsSite -OrgNewsSiteUrl "https://itpartnerno.sharepoint.com/sites/nyheter"
+Set-SPOOrgNewsSite -OrgNewsSiteUrl "https://rafisklaget.sharepoint.com/sites/Nyheter" 
+Set-SPOOrgNewsSite -OrgNewsSiteUrl "https://rafisklaget.sharepoint.com" 
 
 Get-SPOOrgNewsSite
 
