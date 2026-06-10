@@ -55,7 +55,7 @@ $Config = @{
         @{ DisplayName = "Exchange Online Kiosk";                PartNumbers = @("EXCHANGEDESKLESS") }
         @{ DisplayName = "Power Automate Per user";              PartNumbers = @("FLOW_PER_USER","FLOW_PER_USER_P2") }
         @{ DisplayName = "Microsoft 365 Copilot";                PartNumbers = @("Microsoft_365_Copilot") }
-        @{ DisplayName = "Microsoft 365 F1";                      PartNumbers = @("M365_F1","SPE_F1","Microsoft_365_F1") }
+        @{ DisplayName = "Microsoft 365 F1";                      PartNumbers = @("M365_F1","SPE_F1","Microsoft_365_F1", "M365_F1_EEA", "SPE_F1_EEA") }
         @{ DisplayName = "SharePoint Extra Storage (GB)";        PartNumbers = @("SHAREPOINTSTORAGE") }
         @{ DisplayName = "Microsoft Teams Rooms Pro";            PartNumbers = @("Microsoft_Teams_Rooms_Pro","MTR_PRO") }
     )
