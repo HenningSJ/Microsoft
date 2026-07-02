@@ -1,0 +1,1 @@
+.\Nimblr-ReportButton-Setup.ps1 -AdminUpn admin@thearctictravelcompany.onmicrosoft.com -Domain thearctictravelcompany.onmicrosoft.com
