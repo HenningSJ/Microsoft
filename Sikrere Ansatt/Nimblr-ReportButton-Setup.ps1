@@ -34,7 +34,7 @@ param(
     [string]$SharedMbxName  = "Nimblr Report Mailbox",
     [string]$AppName        = "Nimblr-ReportButton-Integration",
     [string]$GroupName      = "API-Access-Group-V2 Security",
-    [int]   $SecretMonths   = 24
+    [int]   $SecretMonths   = 12
 )
 
 $ErrorActionPreference = "Stop"
@@ -57,7 +57,7 @@ Write-Step 0 "Sjekker nødvendige moduler..."
 foreach ($mod in @("ExchangeOnlineManagement", "Microsoft.Graph")) {
     if (-not (Get-Module -ListAvailable -Name $mod)) {
         Write-Host "    Installerer $mod ..." -ForegroundColor Yellow
-        Install-Module $mod -Scope allusers 
+        Install-Module $mod -Scope CurrentUser -Force -AllowClobber
     }
 }
 
@@ -80,8 +80,9 @@ if (Get-Mailbox -Identity $SharedMbx -ErrorAction SilentlyContinue) {
 # 2. Sett bruker-rapportering til delt postboks (+ Microsoft)
 # ----------------------------------------------------------------------
 Write-Step 2 "Konfigurerer ReportSubmissionPolicy..."
+# Merk: New-ReportSubmissionPolicy har IKKE en -Identity-parameter (navnet er
+# alltid "DefaultReportSubmissionPolicy"). Kun Set-ReportSubmissionPolicy tar -Identity.
 $policyParams = @{
-    Identity                          = "DefaultReportSubmissionPolicy"
     EnableReportToMicrosoft           = $true
     ReportPhishToCustomizedAddress    = $true
     ReportPhishAddresses              = $SharedMbx
@@ -91,7 +92,7 @@ $policyParams = @{
     ReportNotJunkAddresses            = $SharedMbx
 }
 if (Get-ReportSubmissionPolicy -ErrorAction SilentlyContinue) {
-    Set-ReportSubmissionPolicy @policyParams
+    Set-ReportSubmissionPolicy -Identity "DefaultReportSubmissionPolicy" @policyParams
 } else {
     New-ReportSubmissionPolicy @policyParams
 }
@@ -158,8 +159,8 @@ Write-Host "`n==================================================================
 Write-Host " LIM INN I NIMBLR-PORTALEN  (Settings > Report Button)" -ForegroundColor Magenta
 Write-Host "==================================================================" -ForegroundColor Magenta
 Write-Host (" Application (client) ID : {0}" -f $app.AppId)
-Write-Host (" Directory (tenant) ID   : {0}" -f $TenantId)
 Write-Host (" Client secret           : {0}" -f $secret.SecretText)
+Write-Host (" Directory (tenant) ID   : {0}" -f $TenantId)
 Write-Host (" Delt postboks           : {0}" -f $SharedMbx)
 Write-Host "==================================================================" -ForegroundColor Magenta
 Write-Host " VIKTIG: Client secret vises kun nå. Lagre den et trygt sted." -ForegroundColor Yellow
