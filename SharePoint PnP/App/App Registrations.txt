@@ -1,0 +1,9 @@
+Serit PnP PowerShell
+
+Application (client) ID: 
+a7a5183a-e869-4a62-bed5-9db047261207
+
+Object ID: 
+cd77df5b-5bc6-4e28-92da-61f885fae758
+
+https://login.microsoftonline.com/common/adminconsent?client_id=a7a5183a-e869-4a62-bed5-9db047261207

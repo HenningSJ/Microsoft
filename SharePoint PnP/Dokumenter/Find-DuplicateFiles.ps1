@@ -1,6 +1,6 @@
 
 # Requires: PnP.PowerShell module
-# Install if needed: Install-Module PnP.PowerShell -Scope CurrentUser
+# Install if needed: Install-Module PnP.PowerShell -Scope 
 
 param(
     [Parameter(Mandatory=$true)]
